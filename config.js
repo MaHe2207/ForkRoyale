@@ -1,6 +1,4 @@
-// Fork Royale – Firebase-Konfiguration für zwei freigeschaltete Benutzer.
-// Diese Web-Konfigurationswerte dürfen öffentlich sein. Die Zugriffsrechte
-// werden über Firebase Authentication und die Firestore-Regeln erzwungen.
+// Fork Royale – Firebase-Konfiguration
 window.FORK_CONFIG = {
   firebase: {
     apiKey: "AIzaSyA5Smce1fYBjB2eW2L-rPyKbr28zBXpTzE",
@@ -11,8 +9,8 @@ window.FORK_CONFIG = {
     appId: "1:1086265555234:web:56bfc2cbeae9aef722cd7b"
   },
   uids: {
-    a: "Mjs7ABMcJMNvG38ynLAhdKtXdBB3", // Person 1
-    b: "rPjmpdkT5oakPGYq6C6kBc4Ezvs1"  // Person 2
+    a: "Mjs7ABMcJMNvG38ynLAhdKtXdBB3",
+    b: "rPjmpdkT5oakPGYq6C6kBc4Ezvs1"
   },
   room: "main"
 };
