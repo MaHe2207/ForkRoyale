@@ -1,13 +1,35 @@
-const CACHE_NAME='fork-royale-shell-v1.0.1';
-const SHELL=['./','./index.html','./manifest.webmanifest','./config.js','./firebase-adapter.js','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./icons/logo-full.png'];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('fork-royale-')&&k!==CACHE_NAME).map(k=>caches.delete(k)))),self.clients.claim()])));
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET')return;
-  const url=new URL(e.request.url);
-  // Never cache sign-in tokens, Firestore, Storage, or third-party APIs.
-  if(url.origin!==location.origin)return;
-  if(e.request.mode==='navigate'){
-    e.respondWith(fetch(e.request).then(r=>{if(r.ok){const copy=r.clone();caches.open(CACHE_NAME).then(c=>c.put('./index.html',copy));}return r}).catch(()=>caches.match('./index.html')));
-  }else e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request)));
+/* Fork Royale PWA – version 1.0.2 */
+const CACHE = 'fork-royale-shell-v1.0.2';
+const SHELL = ['./','./index.html','./manifest.json','./manifest.webmanifest','./config.js','./firebase-adapter.js','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./icons/logo-full.png'];
+self.addEventListener('install', event => {
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    // Optional resource failures do not prevent the service worker from activating.
+    await Promise.allSettled(SHELL.map(async url => {
+      const response = await fetch(url, {cache:'reload'});
+      if (!response.ok) throw new Error(url + ': HTTP ' + response.status);
+      await cache.put(url, response);
+    }));
+    await self.skipWaiting();
+  })());
+});
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key=>key.startsWith('fork-royale-') && key!==CACHE).map(key=>caches.delete(key)));
+    await self.clients.claim();
+  })());
+});
+self.addEventListener('fetch', event => {
+  if(event.request.method !== 'GET')return;
+  const url=new URL(event.request.url);
+  if(url.origin!==self.location.origin)return;
+  if(event.request.mode==='navigate'){
+    event.respondWith(fetch(event.request).then(response=>{
+      if(response.ok){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(c=>c.put('./index.html',copy)));}
+      return response;
+    }).catch(async()=>await caches.match('./index.html') || Response.error()));
+  }else{
+    event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request)));
+  }
 });

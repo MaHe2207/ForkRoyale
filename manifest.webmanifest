@@ -1,18 +1,33 @@
 {
   "name": "Fork Royale",
   "short_name": "Fork Royale",
-  "id": "./",
+  "id": "/ForkRoyale/",
   "description": "Zwei Geschmäcker. Eine königliche Essenswahl.",
   "lang": "de-DE",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/ForkRoyale/",
+  "scope": "/ForkRoyale/",
   "display": "standalone",
   "background_color": "#210b37",
   "theme_color": "#3c1859",
   "orientation": "any",
   "icons": [
-    {"src": "./icons/icon-192.png", "sizes":"192x192", "type":"image/png", "purpose":"any"},
-    {"src": "./icons/icon-512.png", "sizes":"512x512", "type":"image/png", "purpose":"any"},
-    {"src": "./icons/icon-maskable-512.png", "sizes":"512x512", "type":"image/png", "purpose":"maskable"}
+    {
+      "src": "/ForkRoyale/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/ForkRoyale/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/ForkRoyale/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
