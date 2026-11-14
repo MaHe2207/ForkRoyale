@@ -1,9 +1,18 @@
-// Firebase-Modus erst aktivieren, wenn alle Werte eingesetzt sind.
-// Die Firebase-Web-Konfiguration ist öffentlich. Der Zugriff wird durch
-// Firebase Authentication und die Firestore-/Storage-Sicherheitsregeln geschützt.
+// Fork Royale – Firebase-Konfiguration für zwei freigeschaltete Benutzer.
+// Diese Web-Konfigurationswerte dürfen öffentlich sein. Die Zugriffsrechte
+// werden über Firebase Authentication und die Firestore-Regeln erzwungen.
 window.FORK_CONFIG = {
-  firebase: null,
-  // Beispiel: firebase: {apiKey:'...', authDomain:'...', projectId:'...', storageBucket:'...', appId:'...'},
-  uids: { a: '', b: '' }, // Firebase Authentication -> Benutzer -> UID von Person 1 und 2
-  room: 'main'
+  firebase: {
+    apiKey: "AIzaSyA5Smce1fYBjB2eW2L-rPyKbr28zBXpTzE",
+    authDomain: "forkroyale-ea377.firebaseapp.com",
+    projectId: "forkroyale-ea377",
+    storageBucket: "forkroyale-ea377.firebasestorage.app",
+    messagingSenderId: "1086265555234",
+    appId: "1:1086265555234:web:56bfc2cbeae9aef722cd7b"
+  },
+  uids: {
+    a: "Mjs7ABMcJMNvG38ynLAhdKtXdBB3", // Person 1
+    b: "rPjmpdkT5oakPGYq6C6kBc4Ezvs1"  // Person 2
+  },
+  room: "main"
 };

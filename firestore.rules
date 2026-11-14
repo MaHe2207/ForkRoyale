@@ -1,18 +1,25 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // In Firebase-Konsole beide Platzhalter durch die echten Authentication-UIDs ersetzen.
+    // Ausschließlich die zwei Firebase-Authentication-Konten von Fork Royale.
     function member() {
       return request.auth != null && (
-        request.auth.uid == 'REPLACE_WITH_UID_A' ||
-        request.auth.uid == 'REPLACE_WITH_UID_B'
+        request.auth.uid == 'Mjs7ABMcJMNvG38ynLAhdKtXdBB3' ||
+        request.auth.uid == 'rPjmpdkT5oakPGYq6C6kBc4Ezvs1'
       );
     }
+
+    // Gemeinsame Daten in dem von der App verwendeten Dokument.
     match /rooms/main {
       allow read: if member();
-      allow create, update: if member() && request.resource.data.keys().hasOnly(['state']);
+      allow create, update: if member()
+        && request.resource.data.keys().hasOnly(['state']);
       allow delete: if false;
     }
-    match /{document=**} { allow read, write: if false; }
+
+    // Keine Zugriffe auf sonstige Dokumente.
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }
