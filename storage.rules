@@ -1,0 +1,18 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function member() {
+      return request.auth != null && (
+        request.auth.uid == 'REPLACE_WITH_UID_A' ||
+        request.auth.uid == 'REPLACE_WITH_UID_B'
+      );
+    }
+    match /food-images/{foodId}/{fileName} {
+      allow read: if member();
+      allow write: if member()
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType == 'image/jpeg';
+    }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

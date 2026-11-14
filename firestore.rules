@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // In Firebase-Konsole beide Platzhalter durch die echten Authentication-UIDs ersetzen.
+    function member() {
+      return request.auth != null && (
+        request.auth.uid == 'REPLACE_WITH_UID_A' ||
+        request.auth.uid == 'REPLACE_WITH_UID_B'
+      );
+    }
+    match /rooms/main {
+      allow read: if member();
+      allow create, update: if member() && request.resource.data.keys().hasOnly(['state']);
+      allow delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
