@@ -12,19 +12,19 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "/ForkRoyale/icons/icon-192.png",
+      "src": "/ForkRoyale/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/ForkRoyale/icons/icon-512.png",
+      "src": "/ForkRoyale/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/ForkRoyale/icons/icon-maskable-512.png",
+      "src": "/ForkRoyale/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

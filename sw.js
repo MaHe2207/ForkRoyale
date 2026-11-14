@@ -1,6 +1,6 @@
-/* Fork Royale PWA – version 1.0.2 */
-const CACHE = 'fork-royale-shell-v1.0.2';
-const SHELL = ['./','./index.html','./manifest.json','./manifest.webmanifest','./config.js','./firebase-adapter.js','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./icons/logo-full.png'];
+/* Fork Royale PWA – version 1.0.3 */
+const CACHE = 'fork-royale-shell-v1.0.3';
+const SHELL = ['./','./index.html','./manifest.json','./manifest.webmanifest','./config.js','./firebase-adapter.js','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./logo-full.png'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
