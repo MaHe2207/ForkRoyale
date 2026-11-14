@@ -1,8 +1,7 @@
-/* Fork Royale v1.0.0 – optionaler Firebase-Adapter, nur bei Konfiguration geladen. */
+/* Fork Royale v1.0.5 – optionaler Firebase-Adapter, nur bei Konfiguration geladen. */
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut as fbSignOut} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
-import {getFirestore,doc,onSnapshot,runTransaction,getDoc} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
-import {getStorage,ref as storageRef,uploadBytes,getDownloadURL} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-storage.js';
+import {getFirestore,doc,onSnapshot,runTransaction,getDoc,setDoc} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
 const clone = v => JSON.parse(JSON.stringify(v));
 const same = (a,b) => JSON.stringify(a)===JSON.stringify(b);
 const byId = v => new Map((v||[]).map(item=>[item.id,item]));
@@ -73,7 +72,7 @@ export function mergeState(remote,before,after){
   return out;
 }
 export function connect(config,handlers){
-  const app=initializeApp(config.firebase),auth=getAuth(app),firestore=getFirestore(app),storage=getStorage(app);
+  const app=initializeApp(config.firebase),auth=getAuth(app),firestore=getFirestore(app);
   const target=doc(firestore,'rooms',config.room||'main');
   let role=null,stop=null;
   const memberRole=user=>user?.uid===config.uids.a?'a':user?.uid===config.uids.b?'b':null;
@@ -111,15 +110,23 @@ export function connect(config,handlers){
     },
     async reload(){const s=await getDoc(target);if(s.exists())handlers.onData(s.data().state)},
     async uploadImage(foodId,dataUrl){
-      if(!role)throw Error('Nicht angemeldet');
-      const binary=atob(dataUrl.split(',')[1]),bytes=new Uint8Array(binary.length);
-      for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
-      const blob=new Blob([bytes],{type:'image/jpeg'});
-      if(blob.size>2*1024*1024)throw Error('Bild ist zu groß.');
-      const path=`food-images/${foodId}/${crypto.randomUUID()}.jpg`;
-      const ref=storageRef(storage,path);
-      await uploadBytes(ref,blob,{contentType:'image/jpeg'});
-      return getDownloadURL(ref);
+      if(!role||!auth.currentUser)throw Error('Nicht angemeldet');
+      if(!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(dataUrl))throw Error('Es sind nur komprimierte JPEG-Bilder erlaubt.');
+      if(dataUrl.length>120000)throw Error('Foto ist nach Komprimierung noch zu groß.');
+      const imageId=crypto.randomUUID();
+      await setDoc(doc(firestore,'food-images',imageId),{
+        dataUrl, foodId, uploadedBy:auth.currentUser.uid, createdAt:Date.now()
+      });
+      return 'firestore-image:'+imageId;
+    },
+    async loadImage(imageId){
+      if(!role||!auth.currentUser)throw Error('Nicht angemeldet');
+      if(!/^[0-9a-f-]{36}$/.test(imageId))throw Error('Ungültiger Bildverweis');
+      const snapshot=await getDoc(doc(firestore,'food-images',imageId));
+      if(!snapshot.exists())throw Error('Bilddatei wurde nicht gefunden');
+      const data=snapshot.data().dataUrl;
+      if(typeof data!=='string'||!data.startsWith('data:image/jpeg;base64,'))throw Error('Ungültige Bilddaten');
+      return data;
     },
   };
 }

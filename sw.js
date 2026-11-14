@@ -1,5 +1,5 @@
-/* Fork Royale PWA – v1.0.4: Firebase-Konfiguration immer frisch laden */
-const CACHE = 'fork-royale-shell-v1.0.4';
+/* Fork Royale PWA – v1.0.5: Firebase-Konfiguration immer frisch laden */
+const CACHE = 'fork-royale-shell-v1.0.5';
 const SHELL = [
   './', './index.html', './manifest.json', './manifest.webmanifest',
   './config.js', './firebase-adapter.js',
@@ -30,16 +30,16 @@ self.addEventListener('fetch', event => {
 
   // Never serve an outdated Firebase config while online.
   // On a network failure the last cached config permits offline app loading.
-  if(url.pathname.endsWith('/config.js')){
+  if(url.pathname.endsWith('/config.js')||url.pathname.endsWith('/firebase-adapter.js')){
     event.respondWith((async()=>{
       try{
         const fresh=await fetch(event.request,{cache:'no-store'});
         if(!fresh.ok)throw Error('config.js HTTP '+fresh.status);
         const copy=fresh.clone();
-        event.waitUntil(caches.open(CACHE).then(c=>c.put('./config.js',copy)));
+        event.waitUntil(caches.open(CACHE).then(c=>c.put(url.pathname.endsWith('/config.js')?'./config.js':'./firebase-adapter.js',copy)));
         return fresh;
       }catch(err){
-        return (await caches.match('./config.js')) || Response.error();
+        return (await caches.match(url.pathname.endsWith('/config.js')?'./config.js':'./firebase-adapter.js')) || Response.error();
       }
     })());
     return;
