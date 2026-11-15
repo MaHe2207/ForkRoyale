@@ -1,5 +1,5 @@
-/* Fork Royale PWA – v1.0.5: Firebase-Konfiguration immer frisch laden */
-const CACHE = 'fork-royale-shell-v1.0.5';
+/* Fork Royale PWA – v1.0.6: Firebase-Konfiguration immer frisch laden */
+const CACHE = 'fork-royale-shell-v1.0.6';
 const SHELL = [
   './', './index.html', './manifest.json', './manifest.webmanifest',
   './config.js', './firebase-adapter.js',

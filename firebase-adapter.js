@@ -1,4 +1,4 @@
-/* Fork Royale v1.0.5 – optionaler Firebase-Adapter, nur bei Konfiguration geladen. */
+/* Fork Royale v1.0.6 – optionaler Firebase-Adapter, nur bei Konfiguration geladen. */
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut as fbSignOut} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
 import {getFirestore,doc,onSnapshot,runTransaction,getDoc,setDoc} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
@@ -66,6 +66,20 @@ export function mergeState(remote,before,after){
     const currIds=new Set(next.map(notificationKey));
     post.forEach(n=>{const key=notificationKey(n);if(!currIds.has(key)){next.push(clone(n));currIds.add(key)}});
     out.notifications[p]=next;
+  }
+  // User-specific Arena state. Preserve new-food challenges added by the other
+  // phone while a person is fighting. Consume only challenges that were actually
+  // present in that person's baseline.
+  out.arenaQueue??={a:[],b:[]};out.arenaStreaks??={a:[],b:[]};
+  for(const p of ['a','b']){
+    const pre=b.arenaQueue?.[p]||[],post=a.arenaQueue?.[p]||[],curr=out.arenaQueue?.[p]||[];
+    const removed=new Set(pre.filter(id=>!post.includes(id)));
+    const next=curr.filter(id=>!removed.has(id));
+    for(const id of post)if(!next.includes(id))next.push(id);
+    out.arenaQueue[p]=next.filter(id=>out.foods.some(f=>f.id===id));
+    if(!same(b.arenaStreaks?.[p],a.arenaStreaks?.[p])){
+      out.arenaStreaks[p]=(a.arenaStreaks?.[p]||[]).filter(id=>out.foods.some(f=>f.id===id));
+    }
   }
   // Client-only data (active user, current queue and current view) never belongs in Firestore.
   delete out.active;delete out.priority;delete out.lastPool;
