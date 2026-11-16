@@ -1,4 +1,4 @@
-/* Fork Royale v1.0.6 – optionaler Firebase-Adapter, nur bei Konfiguration geladen. */
+/* Fork Royale v1.0.7 – optionaler Firebase-Adapter, nur bei Konfiguration geladen. */
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut as fbSignOut} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
 import {getFirestore,doc,onSnapshot,runTransaction,getDoc,setDoc} from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
@@ -79,6 +79,22 @@ export function mergeState(remote,before,after){
     out.arenaQueue[p]=next.filter(id=>out.foods.some(f=>f.id===id));
     if(!same(b.arenaStreaks?.[p],a.arenaStreaks?.[p])){
       out.arenaStreaks[p]=(a.arenaStreaks?.[p]||[]).filter(id=>out.foods.some(f=>f.id===id));
+    }
+  }
+  // Enforce a single active Super-Hot per account in the Firestore transaction.
+  // Older duplicate votes become normal Hot; planned meals also free up the slot.
+  const planned=new Set(out.plan.map(x=>x.foodId));
+  for(const p of ['a','b']){
+    const supers=[];
+    for(const [id,vote] of Object.entries(out.votes||{}))if(vote?.[p]?.v==='super'){
+      if(planned.has(id))vote[p]={...vote[p],v:'hot'};
+      else supers.push({id,at:Number(vote[p].at)||0});
+    }
+    supers.sort((a,b)=>b.at-a.at||a.id.localeCompare(b.id));
+    const other=p==='a'?'b':'a';
+    for(const {id} of supers.slice(1)){
+      out.votes[id][p]={...out.votes[id][p],v:'hot'};
+      out.notifications[other]=out.notifications[other].filter(n=>!(n.type==='super'&&n.from===p&&n.foodId===id));
     }
   }
   // Client-only data (active user, current queue and current view) never belongs in Firestore.
