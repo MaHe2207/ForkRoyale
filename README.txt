@@ -1,20 +1,31 @@
-# Fork Royale – Firebase-Aktivierung v1.0.4
+FORK ROYALE v1.0.8 – BUGFIX LIVE-SYNCHRONISIERUNG
+=================================================
 
-Dieses Paket behebt einen Cache-Fehler, durch den eine frisch hochgeladene `config.js` auf Android weiterhin als alte, leere Demokonfiguration geladen wurde.
+BEHOBEN:
+Waehrend eine Person ein neues Gericht anlegt oder ein vorhandenes bearbeitet,
+wurden Eingabefelder und Fotoauswahl durch eine Firestore-Aktualisierung vom
+zweiten Smartphone ungewollt zurueckgesetzt. Das geoeffnete Formular bleibt nun
+beim Eingang von Live-Aktualisierungen unveraendert. Laufende Eingaben, Tags,
+Rezeptquelle, Dateiauswahl und Eingabefokus bleiben erhalten.
 
-## Upload bei GitHub
+Zusaetzlich: Wenn die andere Person ein gerade bearbeitetes Gericht loescht,
+verhindert die App, dass dieses Gericht beim Speichern unbeabsichtigt neu angelegt wird.
 
-1. Dieses ZIP entpacken.
-2. Im Repository `mahe2207/ForkRoyale` die drei Dateien `index.html`, `config.js` und `sw.js` direkt ins Stammverzeichnis hochladen; vorhandene Versionen ersetzen.
-3. `Commit changes` und abwarten, bis GitHub Pages erfolgreich veröffentlicht wurde.
-4. Auf Android Fork Royale schließen und neu starten. Falls noch die alte Version angezeigt wird: in Chrome `https://mahe2207.github.io/ForkRoyale/?v=1.0.4` öffnen, dann neu laden. Die Version unten in der App muss `v1.0.4` anzeigen.
+GITHUB-UPDATE:
+1. ZIP entpacken.
+2. Ausschliesslich index.html und sw.js ins Stammverzeichnis des GitHub-
+   Repositories mahe2207/ForkRoyale hochladen und bestehende Dateien ersetzen.
+3. Commit changes waehlen und die GitHub-Pages-Veroeffentlichung abwarten.
+4. Installierte PWA schliessen und erneut oeffnen. Version v1.0.8 pruefen.
 
-## Prüfung
+UNVERAENDERT:
+config.js, firebase-adapter.js, Firestore-Regeln, bestehende Gerichte,
+Bilder, Ranglisten, Bewertungen und Wochenplan. Keine Datenmigration notwendig.
 
-Unter `https://mahe2207.github.io/ForkRoyale/config.js?v=1.0.4` sollte beim Öffnen im Browser `window.FORK_CONFIG` mit `firebase` und den beiden UIDs zu sehen sein (nicht `firebase: null`).
+TEST:
+Auf Smartphone 1 ein Gericht anlegen/bearbeiten und Text und Foto auswaehlen.
+Gleichzeitig auf Smartphone 2 einen Kampf oder eine Bewertung durchfuehren.
+Auf Smartphone 1 muessen Formular, Text und Foto erhalten bleiben.
 
-Nach dem Laden sollte der Login erscheinen. Melden sich die Nutzer an und sind die Firestore-Regeln veröffentlicht, wird in Firestore das gemeinsame Dokument `rooms/main` angelegt.
-
-Falls noch Demo angezeigt wird: Sicherstellen, dass `index.html`, `config.js`, `sw.js` wirklich im Repository-Stammverzeichnis liegen. Neu laden oder Browser-Website-Daten für diese Domain löschen – Achtung: Lokale Demodaten gehen beim Löschen der Website-Daten verloren.
-
-Die Firebase-Web-Konfiguration ist öffentlich, Passwörter und private Schlüssel gehören nicht in GitHub.
+HINWEIS: Browser-Funktionstests haben den Firebase-Snapshot-Ablauf simuliert.
+Ein Live-Test auf zwei echten Geraeten ist nach dem Hochladen erforderlich.
